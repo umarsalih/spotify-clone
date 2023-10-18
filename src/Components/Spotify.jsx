@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, {useEffect} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import styled from "styled-components";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
@@ -11,6 +11,13 @@ import { reducerCases } from '../Utilities/Constants';
 function Spotify() {
 
     const [{token}, dispatch] = useStateProvider();
+    const bodyRef = useRef();
+    const [navBackground, setNavBackground] = useState(false);
+    const [headerBackground, setHeaderBackground] = useState(false);
+    const bodyScrolled = () => {
+        bodyRef.current.scrollTop >= 30 ? setNavBackground(true) : setNavBackground(false);
+        bodyRef.current.scrollTop >= 268 ? setHeaderBackground(true) : setHeaderBackground(false)
+    }
 
     useEffect(() => {
         const getUserInfo = async () => {
@@ -40,10 +47,10 @@ function Spotify() {
         <Container>
             <div className='spotify_body'>
                 <Sidebar/>
-                <div className='body'>
-                    <Navbar/>
+                <div className='body' ref={bodyRef} onScroll={bodyScrolled}>
+                    <Navbar navBackground={navBackground}/>
                     <div className='body_contents'>
-                        <Body/>
+                        <Body headerBackground={headerBackground} />
                     </div>
                 </div>
             </div>
@@ -72,6 +79,12 @@ const Container = styled.div `
             height: 100%;
             width: 100%;
             overflow: auto;
+            &::-webkit-scrollbar {
+            width: 0.7rem;
+            &-thumb {
+            background-color: rgba(255,255,255,0.6);
+        }
+    }
         }
     }
 `;
